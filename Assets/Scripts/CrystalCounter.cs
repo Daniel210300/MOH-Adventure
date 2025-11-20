@@ -2,19 +2,19 @@ using UnityEngine;
 
 public class CrystalCounter : MonoBehaviour
 {
-    public int crystals;
-    public TablaCristales boardText;
+    public static CrystalCounter Instance;
 
-    private void OnTriggerEnter(Collider other)
+    public int crystals = 0;
+    public TablaCristales tabla;
+
+    private void Awake()
     {
-        if (other.CompareTag("Crystal"))
-        {
-            crystals++;
+        Instance = this;
+    }
 
-            if (boardText != null)
-                boardText.UpdateText(crystals);
-
-            Destroy(other.gameObject);
-       }
-    }
+    public void AddCrystal()
+    {
+        crystals++;
+        tabla.UpdateText(crystals);
+    }
 }
