@@ -16,5 +16,5 @@ public class CrystalCounter : MonoBehaviour
     {
         crystals++;
         tabla.UpdateText(crystals);
-    }
+    }
 }

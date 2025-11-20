@@ -1,14 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelManager : MonoBehaviour
+public class LevelManager3 : MonoBehaviour
 {
     // Singleton para acceder fácilmente desde cualquier script
-    public static LevelManager Instance { get; private set; }
+    public static LevelManager3 Instance { get; private set; }
     
     // Nombres de las escenas
     public string mainMenuScene = "MainMenu";
-    public string nextLevelScene = "Nivel3";
     
     // Referencias a los Canvas de UI
     public GameObject levelCompleteUI;
@@ -137,10 +136,6 @@ public class LevelManager : MonoBehaviour
     
     // Métodos para los botones de la UI
     
-    public void LoadNextLevel()
-    {
-        SceneManager.LoadScene(nextLevelScene);
-    }
     
     public void LoadMainMenu()
     {

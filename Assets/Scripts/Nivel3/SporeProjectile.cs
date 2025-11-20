@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class SporeProjectile : MonoBehaviour
 {
-    public float speed = 5f;
-    public float damage = 10f;
+    public float speed = 8f;
+    public float damage = 15f;
 
     private Transform target;
 
