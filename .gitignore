@@ -1,0 +1,83 @@
+# =============================================
+# UNITY .gitignore (Seguro, sin omitir archivos importantes)
+# =============================================
+
+# --- CARPETAS QUE NO VAN EN GIT ---
+Library/
+Temp/
+Obj/
+Logs/
+MemoryCaptures/
+UserSettings/
+DerivedDataCache/
+Build/
+Builds/
+Build*/        # Cualquier carpeta de build
+Recordings/
+
+# --- ARCHIVOS LOCALES ---
+*.csproj
+*.unityproj
+*.sln
+*.vsp
+*.pidb
+*.suo
+*.user
+*.userprefs
+*.dll.mdb
+*.pdb
+*.mdb
+
+# --- VISUAL STUDIO / RIDER ---
+.vscode/
+.idea/
+*.DotSettings
+
+# --- SISTEMA ---
+.DS_Store
+Thumbs.db
+
+# --- UNITY COLLAB CACHE ---
+Collab/
+
+# --- CRASH REPORTS ---
+sysinfo.txt
+
+# --- PACKAGES ---
+# Estos sí se deben versionar
+# Assets/Packages DO go to git
+# Pero los cacheados no:
+*.unitypackage
+
+# --- TEXTURE / GI CACHE ---
+Library/Artifacts/
+Library/ShaderCache/
+Library/GPUCache/
+
+# --- PLUGINS TEMPORALES ---
+/Assets/Plugins/*/Android/libs/*.aar
+
+# --- NUEVO INPUT SYSTEM ---
+Assets/InputActions/*.inputactions*
+
+# --- ADDRESSABLES CACHE ---
+/Library/com.unity.addressables/
+
+# === ARCHIVOS IMPORTANTES QUE NO DEBES IGNORAR ===
+!Assets/
+!ProjectSettings/
+!Packages/
+
+# Conferma: no ignorar escenas, prefabs, scripts, materiales, animaciones
+!Assets/**/*.unity
+!Assets/**/*.prefab
+!Assets/**/*.mat
+!Assets/**/*.anim
+!Assets/**/*.controller
+!Assets/**/*.asset
+!Assets/**/*.png
+!Assets/**/*.jpg
+!Assets/**/*.fbx
+!Assets/**/*.cs
+!Assets/**/*.shader
+!Assets/**/*.compute
