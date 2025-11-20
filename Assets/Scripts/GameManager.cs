@@ -69,11 +69,12 @@ public class GameManager : MonoBehaviour
 
     void QuitGame()
     {
-        // Salir del juego (en build) o del editor
+        Time.timeScale = 1f;
+
         #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+            SceneManager.LoadScene("MainMenu"); // en editor vuelve al menú
         #else
-            Application.Quit();
+            Application.Quit(); // en build cierra el juego
         #endif
     }
 

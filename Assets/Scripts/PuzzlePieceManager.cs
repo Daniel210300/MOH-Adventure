@@ -216,6 +216,11 @@ public class PuzzlePieceManager : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
+
+     public void Regresar()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
     
     public int GetCollectedPieces() => collectedPieces;
     public int GetTotalPieces() => totalPieces;

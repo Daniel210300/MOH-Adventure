@@ -62,6 +62,16 @@ public class PlayerEnergy : MonoBehaviour
         isDead = true;
         Debug.Log("💀 Moh se ha consumido en la oscuridad...");
         onPlayerDeath?.Invoke();
+        
+        // LLAMAR AL GAME OVER DEL LEVEL MANAGER
+        if (LevelManager.Instance != null)
+        {
+            LevelManager.Instance.GameOver();
+        }
+        else
+        {
+            Debug.LogError("LevelManager.Instance no encontrada");
+        }
     }
 
     void UpdateEnergyBar()
@@ -109,6 +119,8 @@ public class PlayerEnergy : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        if (isDead) return;
+
         float oldEnergy = currentEnergy;
         currentEnergy -= amount;
         currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
@@ -121,5 +133,13 @@ public class PlayerEnergy : MonoBehaviour
         {
             Die();
         }
+    }
+
+    // Método para revivir al jugador (si necesitas resetear)
+    public void Revive()
+    {
+        isDead = false;
+        currentEnergy = maxEnergy;
+        UpdateEnergyBar();
     }
 }
