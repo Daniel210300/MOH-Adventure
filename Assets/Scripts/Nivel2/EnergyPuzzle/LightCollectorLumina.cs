@@ -4,20 +4,20 @@ public class LuminaCollectorLumina : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        // Detecta si choca con un fragmento
         if (other.CompareTag("LightFragment"))
         {
-            // Buscar el LightChallenge en la escena
             LightChallenge challenge = FindFirstObjectByType<LightChallenge>();
-            if (challenge != null)
-            {
-                challenge.CollectFragment(other.gameObject); // ✅ PASAR EL FRAGMENTO
-            }
+            challenge?.CollectFragment(other.gameObject);
 
-            // Destruir el fragmento
-            other.gameObject.SetActive(false);
+            StartCoroutine(SafeDisable(other.gameObject));
 
             Debug.Log("Fragmento recolectado por Lumina");
         }
+    }
+
+    private System.Collections.IEnumerator SafeDisable(GameObject obj)
+    {
+        yield return null; // espera un frame
+        obj.SetActive(false);
     }
 }

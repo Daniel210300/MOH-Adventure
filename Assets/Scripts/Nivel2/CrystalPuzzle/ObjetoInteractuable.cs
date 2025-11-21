@@ -7,7 +7,7 @@ public class ObjetoInteractuable : MonoBehaviour
     public string idObjeto;   // Debe coincidir con el patrón del PatronManager
     
     [Header("Efectos Visuales")]
-    public Color colorCorrecto = Color.yellow;
+    public Color colorCorrecto = new Color(0f, 1f, 1f);
     public Color colorCompletado = Color.green;
     public float intensidadEmision = 1.0f;
     

@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public bool canMove = true;
+
     private CharacterController _player;
     private float _moveSpeed = 7f;
     private Vector2 _moveInput;
@@ -38,6 +40,18 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (!canMove)
+        {
+            // Para que no camine, no rote y no suene audio
+            _animator.SetFloat("PosX", 0);
+            _animator.SetFloat("PosZ", 0);
+
+            if (_stepsAudio != null && _stepsAudio.isPlaying)
+                _stepsAudio.Stop();
+
+            return; // Bloquea todo el movimiento
+        }
+
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
 

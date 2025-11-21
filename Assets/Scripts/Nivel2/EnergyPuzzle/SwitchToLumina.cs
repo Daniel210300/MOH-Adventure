@@ -1,6 +1,8 @@
 using UnityEngine;
 using Unity.Cinemachine;
 using UnityEngine.InputSystem;
+using System.Collections;
+
 
 public class SwitchToLumina : MonoBehaviour
 {
@@ -37,11 +39,17 @@ public class SwitchToLumina : MonoBehaviour
     void SwitchControl()
 {
     switched = true;
+    StartCoroutine(SwitchDelayed());
+}
+
+private IEnumerator SwitchDelayed()
+{
+    yield return null; // 🔥 IMPORTANTÍSIMO: esperar 1 frame
 
     // Desactivar Moh
     heroController.enabled = false;
 
-    // Lumina deja de seguir a Moh (si aplica)
+    // Dejar de seguir
     luminaFollower.enabled = false;
 
     // Activar control de Lumina
@@ -50,35 +58,24 @@ public class SwitchToLumina : MonoBehaviour
 
     Debug.Log("Control cambiado a Lumina");
 
-    // Cambiar cámaras
+    // Cámaras
     heroCamera.gameObject.SetActive(false);
     topDownCamera.gameObject.SetActive(true);
 
-    // 🔹 Activar HUD de Lumina
+    // Activar HUD
     if (luminaCanvas != null)
     {
         luminaCanvas.gameObject.SetActive(true);
-        Debug.Log("LuminaCanvas activado correctamente");
-        Debug.Log("Canvas Render Mode: " + luminaCanvas.renderMode);
-
-        if (luminaCanvas.renderMode == RenderMode.ScreenSpaceCamera)
-        {
-            Debug.Log("Canvas tiene asignada la cámara: " + luminaCanvas.worldCamera);
-        }
-    }
-    else
-    {
-        Debug.LogWarning("No se ha asignado LuminaCanvas en el inspector!");
     }
 
-    // 🔹 Iniciar el reto de fragmentos al aparecer Lumina
+    // Iniciar el reto
     LightChallenge challenge = LightChallenge.FindFirstObjectByType<LightChallenge>();
     if (challenge != null)
     {
         challenge.StartChallenge();
-        Debug.Log("Reto de fragmentos iniciado");
     }
 }
+
 
 
     private void Update()

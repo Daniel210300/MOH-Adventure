@@ -16,7 +16,7 @@ public class IntroCrystalsTrigger : MonoBehaviour
 
     void Start()
     {
-        // Guardar los materiales originales de los cristales
+        // Clonar y guardar los materiales originales de los cristales
         originalMaterials = new Material[crystalSequence.Length];
         for (int i = 0; i < crystalSequence.Length; i++)
         {
@@ -25,7 +25,9 @@ public class IntroCrystalsTrigger : MonoBehaviour
                 Renderer rend = crystalSequence[i].GetComponent<Renderer>();
                 if (rend != null)
                 {
-                    originalMaterials[i] = rend.material;
+                    // Clonar material solo una vez para cada cristal
+                    originalMaterials[i] = new Material(rend.sharedMaterial);
+                    rend.material = originalMaterials[i];
                 }
             }
         }
@@ -37,7 +39,7 @@ public class IntroCrystalsTrigger : MonoBehaviour
         {
             playerInside = true;
             if (InteractionUI.instance != null)
-                InteractionUI.instance.Show("Presiona E para ver la combinación");
+                InteractionUI.instance.Show("Presiona E para ver");
         }
     }
 
@@ -67,15 +69,16 @@ public class IntroCrystalsTrigger : MonoBehaviour
         isPlayingSequence = true;
 
         // Secuencia de luces en los cristales con emisión
-        foreach (Transform crystal in crystalSequence)
+        for (int i = 0; i < crystalSequence.Length; i++)
         {
+            Transform crystal = crystalSequence[i];
             if (crystal == null) continue;
             
             Renderer rend = crystal.GetComponent<Renderer>();
             if (rend != null)
             {
-                // Activar emisión
-                yield return StartCoroutine(GlowCrystal(rend));
+                // Activar emisión usando el material ya guardado
+                yield return StartCoroutine(GlowCrystal(rend, originalMaterials[i]));
                 yield return new WaitForSeconds(delayBetweenFlashes);
             }
         }
@@ -85,19 +88,16 @@ public class IntroCrystalsTrigger : MonoBehaviour
         // Mostrar UI nuevamente si el jugador sigue en el trigger
         if (playerInside && InteractionUI.instance != null)
         {
-            InteractionUI.instance.Show("Presiona E para ver la combinación");
+            InteractionUI.instance.Show("Presiona E para ver");
         }
     }
 
-    private System.Collections.IEnumerator GlowCrystal(Renderer rend)
+    private System.Collections.IEnumerator GlowCrystal(Renderer rend, Material mat)
     {
-        Material mat = rend.material;
-        
         // Asegurar que el material tenga emisión
         if (!mat.HasProperty("_EmissionColor"))
         {
-            // Si no tiene propiedad de emisión, usar el método alternativo
-            yield return StartCoroutine(GlowCrystalAlternative(rend));
+            yield return StartCoroutine(GlowCrystalAlternative(rend, mat));
             yield break;
         }
 
@@ -115,10 +115,6 @@ public class IntroCrystalsTrigger : MonoBehaviour
             float intensity = Mathf.Sin((flashTime / flashDuration) * Mathf.PI) * glowIntensity;
             Color emissionColor = glowColor * intensity;
             mat.SetColor("_EmissionColor", emissionColor);
-            
-            // Forzar la actualización de la luz global (importante para GI)
-            // DynamicGI.SetEmissive(rend, emissionColor);
-            
             yield return null;
         }
 
@@ -128,19 +124,17 @@ public class IntroCrystalsTrigger : MonoBehaviour
             mat.DisableKeyword("_EMISSION");
     }
 
-    // Método alternativo si el material no soporta emisión
-    private System.Collections.IEnumerator GlowCrystalAlternative(Renderer rend)
+    private System.Collections.IEnumerator GlowCrystalAlternative(Renderer rend, Material mat)
     {
-        Material mat = rend.material;
         Color originalColor = mat.color;
-        Color glowColor = this.glowColor * 2f; // Más brillante para compensar
+        Color altGlowColor = glowColor * 2f; // Más brillante para compensar
 
         float flashTime = 0f;
         while (flashTime < flashDuration)
         {
             flashTime += Time.deltaTime;
             float intensity = Mathf.Sin((flashTime / flashDuration) * Mathf.PI);
-            mat.color = Color.Lerp(originalColor, glowColor, intensity);
+            mat.color = Color.Lerp(originalColor, altGlowColor, intensity);
             yield return null;
         }
 
