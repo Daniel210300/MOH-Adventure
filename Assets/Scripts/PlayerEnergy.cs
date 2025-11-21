@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerEnergy : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public class PlayerEnergy : MonoBehaviour
         if (Instance == null)
             Instance = this;
         else
-            Destroy(gameObject); 
+            Destroy(gameObject);
     }
 
     void Start()
@@ -62,15 +63,40 @@ public class PlayerEnergy : MonoBehaviour
         isDead = true;
         Debug.Log("💀 Moh se ha consumido en la oscuridad...");
         onPlayerDeath?.Invoke();
-        
-        // LLAMAR AL GAME OVER DEL LEVEL MANAGER
-        if (LevelManager.Instance != null)
+
+        string escenaActual = SceneManager.GetActiveScene().name;
+
+        // 🚫 Niveles donde NO queremos GameOver
+        if (escenaActual == "Nivel1")
         {
-            LevelManager.Instance.GameOver();
+            Debug.Log("⚠ El personaje murió, pero en Nivel1 NO se ejecuta GameOver.");
+            return;
         }
-        else
+
+        // ✔ Nivel2 - usa LevelManager original
+        if (escenaActual == "Nivel2")
         {
-            Debug.LogError("LevelManager.Instance no encontrada");
+            if (LevelManager.Instance != null)
+            {
+                LevelManager.Instance.GameOver();
+            }
+            else
+            {
+                Debug.LogError("LevelManager.Instance no encontrada");
+            }
+        }
+
+        // ✔ Nivel3 - usa LevelManager3
+        if (escenaActual == "Nivel3")
+        {
+            if (LevelManager3.Instance != null)
+            {
+                LevelManager3.Instance.GameOver();
+            }
+            else
+            {
+                Debug.LogError("LevelManager3.Instance no encontrada");
+            }
         }
     }
 

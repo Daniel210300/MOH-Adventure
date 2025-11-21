@@ -1,5 +1,6 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // 🔹 necesario para Keyboard.current
+using UnityEngine.InputSystem;
+using System.Collections;
 
 public class LightChallenge : MonoBehaviour
 {
@@ -17,17 +18,16 @@ public class LightChallenge : MonoBehaviour
     public GameObject[] fragmentObjects;
 
     [Header("UI")]
-    public GameObject restartButton; // 🟢 Asigna aquí tu botón de reiniciar en el Inspector
+    public GameObject restartButton;
 
     private void Start()
     {
         if (restartButton != null)
-            restartButton.SetActive(false); // ocultamos al inicio
+            restartButton.SetActive(false);
     }
 
     private void Update()
     {
-        // Solo contamos tiempo si el reto está activo
         if (challengeActive)
         {
             timer -= Time.deltaTime;
@@ -47,7 +47,6 @@ public class LightChallenge : MonoBehaviour
         }
         else
         {
-            // Si el reto ya terminó correctamente, esperar tecla O
             if (fragmentsCollected >= fragmentsRequired)
             {
                 if (uiManager != null)
@@ -70,13 +69,11 @@ public class LightChallenge : MonoBehaviour
         if (uiManager != null)
             uiManager.UpdateMessage("¡Recoge todos los fragmentos de luz!");
 
-        if (fragmentObjects != null)
-            foreach (var f in fragmentObjects)
-                if (f != null)
-                    f.SetActive(true);
+        // Activar fragmentos de manera segura
+        StartCoroutine(EnableFragmentsSmooth());
 
         if (restartButton != null)
-            restartButton.SetActive(false); // ocultamos el botón al iniciar
+            restartButton.SetActive(false);
     }
 
     public void CollectFragment(GameObject fragment)
@@ -84,7 +81,7 @@ public class LightChallenge : MonoBehaviour
         fragmentsCollected++;
 
         if (fragment != null)
-            fragment.SetActive(false);
+            StartCoroutine(DisableNextFrame(fragment));
 
         if (uiManager != null)
             uiManager.UpdateMessage("Fragmentos recolectados: " + fragmentsCollected + "/" + fragmentsRequired);
@@ -99,6 +96,7 @@ public class LightChallenge : MonoBehaviour
     private void ChallengeCompleted()
     {
         challengeActive = false;
+
         if (uiManager != null)
             uiManager.UpdateMessage("¡Reto completado!");
     }
@@ -111,7 +109,7 @@ public class LightChallenge : MonoBehaviour
             uiManager.UpdateMessage("Se acabó el tiempo. Presiona 'Reiniciar'.");
 
         if (restartButton != null)
-            restartButton.SetActive(true); // mostrar botón al fallar
+            restartButton.SetActive(true);
     }
 
     public void ResetChallenge()
@@ -126,30 +124,18 @@ public class LightChallenge : MonoBehaviour
             uiManager.ClearMessage();
         }
 
-        if (fragmentObjects != null)
-            foreach (var f in fragmentObjects)
-                if (f != null)
-                    f.SetActive(true);
+        StartCoroutine(EnableFragmentsSmooth());
 
         if (restartButton != null)
-            restartButton.SetActive(false); // ocultamos de nuevo
+            restartButton.SetActive(false);
     }
 
-    // 🔹 Nuevo método para salir del reto con O
     private void ExitChallenge()
     {
         Debug.Log("Saliendo del reto de fragmentos...");
 
-        if (uiManager != null)
-            uiManager.ClearMessage();
-
-        // Opcional: reiniciar fragmentos para que vuelvan a aparecer
-        if (fragmentObjects != null)
-            foreach (var f in fragmentObjects)
-                if (f != null)
-                    f.SetActive(true);
-
-        // Si quieres, aquí podrías devolver el control a Moh, cámaras, etc.
+    if (uiManager != null)
+        uiManager.ClearMessage();
     }
 
     private void OpenDoor()
@@ -162,6 +148,23 @@ public class LightChallenge : MonoBehaviour
         else
         {
             Debug.LogWarning("Animator de DoorRamas2 no asignado!");
+        }
+    }
+
+    // ========== FIX CRÍTICO ==========
+    private IEnumerator DisableNextFrame(GameObject obj)
+    {
+        yield return null; // Evita leak al desactivar renderers/colliders
+        obj.SetActive(false);
+    }
+
+    private IEnumerator EnableFragmentsSmooth()
+    {
+        yield return null; // Evita spike de activaciones simultáneas
+
+        foreach (var f in fragmentObjects)
+        {
+            f?.SetActive(true);
         }
     }
 }
