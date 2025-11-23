@@ -12,19 +12,21 @@ public class LightFragment : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
+            PlayerEnergy playerEnergy = other.GetComponent<PlayerEnergy>();
+            if (playerEnergy == null) return;
+
+            // ⛔ NO permitir recoger si el jugador ya está muerto
+            if (playerEnergy.IsDead) return;
+
             collected = true;
 
             // Sumar energía
-            PlayerEnergy playerEnergy = other.GetComponent<PlayerEnergy>();
-            if (playerEnergy != null)
-            {
-                playerEnergy.AddEnergy(energyAmount);
+            playerEnergy.AddEnergy(energyAmount);
 
-                // Reacción de Lumina si existe (esto es seguro)
-                LuminaReact lumina = FindFirstObjectByType<LuminaReact>();
-                if (lumina != null)
-                    lumina.React();
-            }
+            // Reacción de Lumina (si existe)
+            LuminaReact lumina = FindFirstObjectByType<LuminaReact>();
+            if (lumina != null)
+                lumina.React();
 
             // Notificar al puzzle
             LightChallenge challenge = FindFirstObjectByType<LightChallenge>();
@@ -33,7 +35,7 @@ public class LightFragment : MonoBehaviour
                 challenge.CollectFragment(this.gameObject);
             }
 
-            // Desactivar inmediatamente (seguro al no tener efectos)
+            // Desactivar inmediatamente
             GetComponent<Collider>().enabled = false;
             gameObject.SetActive(false);
         }

@@ -22,7 +22,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _bounceForce = 20f;
     private bool _onBounceSurface = false;
 
-    // 🔊 AUDIO DE PASOS
     private AudioSource _stepsAudio;
 
     void Start()
@@ -34,7 +33,6 @@ public class PlayerController : MonoBehaviour
         _gravity = 60f;
         _jumpForce = 15f;
 
-        // Cargar el AudioSource
         _stepsAudio = GetComponent<AudioSource>();
     }
 
@@ -42,71 +40,71 @@ public class PlayerController : MonoBehaviour
     {
         if (!canMove)
         {
-            // Para que no camine, no rote y no suene audio
             _animator.SetFloat("PosX", 0);
             _animator.SetFloat("PosZ", 0);
 
             if (_stepsAudio != null && _stepsAudio.isPlaying)
                 _stepsAudio.Stop();
 
-            return; // Bloquea todo el movimiento
+            return;
         }
 
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
 
         float h = 0, v = 0;
+
         if (keyboard.aKey.isPressed) h = -1;
         if (keyboard.dKey.isPressed) h = 1;
         if (keyboard.wKey.isPressed) v = 1;
         if (keyboard.sKey.isPressed) v = -1;
 
-        // Actualizamos el movimiento primero
         _moveAxis = new Vector3(h, 0, v).normalized * _moveSpeed;
 
-        // Animator
         _animator.SetFloat("PosX", _moveAxis.x);
         _animator.SetFloat("PosZ", _moveAxis.z);
 
-        // Movimiento relativo a la cámara
         CameraDirection();
         _moveDir = _moveAxis.x * _camRight + _moveAxis.z * _camForward;
 
-        // Rotación del personaje
-        if (_moveDir.magnitude > 0.1f)
-            transform.LookAt(transform.position + _moveDir);
+        // ROTACIÓN
+        if (_moveDir.sqrMagnitude > 0.01f)
+        {
+            Vector3 flat = new Vector3(_moveDir.x, 0, _moveDir.z);
 
-        // Gravedad y salto
+            if (flat.sqrMagnitude > 0.01f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(flat);
+                transform.rotation = Quaternion.Slerp(
+                    transform.rotation,
+                    targetRot,
+                    12f * Time.deltaTime
+                );
+            }
+        }
+
         SetGravity();
         SetJump();
 
-        // Movimiento final
         _player.Move(_moveDir * Time.deltaTime);
 
-        // 🔊 CONTROLAR SONIDO DE PASOS
         HandleFootsteps();
     }
 
-    // ================================================
-    //              SONIDO DE PASOS
-    // ================================================
     private void HandleFootsteps()
     {
-        // El personaje se mueve horizontalmente
         bool isMoving = new Vector3(_moveAxis.x, 0, _moveAxis.z).magnitude > 0.1f;
-
-        // Está tocando el piso
         bool grounded = _player.isGrounded;
 
         if (isMoving && grounded)
         {
             if (!_stepsAudio.isPlaying)
-                _stepsAudio.Play();   // Suena
+                _stepsAudio.Play();
         }
         else
         {
             if (_stepsAudio.isPlaying)
-                _stepsAudio.Stop();    // Se detiene
+                _stepsAudio.Stop();
         }
     }
 

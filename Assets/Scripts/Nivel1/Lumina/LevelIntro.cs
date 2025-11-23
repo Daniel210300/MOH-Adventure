@@ -4,18 +4,32 @@ using System.Collections;
 public class LevelIntro : MonoBehaviour
 {
     private LuminaSubtitleSystem subtitleSystem;
-    private PlayerController player; // ← Referencia al jugador
+    private PlayerController player;
+
+    // 🔹 Variable estática para detectar Retry
+    private static bool isRetry = false;
 
     private void Start()
     {
         subtitleSystem = FindFirstObjectByType<LuminaSubtitleSystem>();
         player = FindFirstObjectByType<PlayerController>();
 
-        // Bloquear movimiento al inicio
+        if (isRetry)
+        {
+            // Si es Retry, no mostrar intro
+            if (player != null)
+                player.canMove = true;
+
+            // Reset para la próxima vez
+            isRetry = false;
+            return;
+        }
+
+        // Bloquear movimiento del jugador al inicio
         if (player != null)
             player.canMove = false;
 
-        if(subtitleSystem != null)
+        if (subtitleSystem != null)
             StartCoroutine(ShowSubtitlesSequence());
         else
             Debug.LogError("No se encontró LuminaSubtitleSystem en la escena!");
@@ -25,34 +39,40 @@ public class LevelIntro : MonoBehaviour
     {
         float dur;
 
-        // Primer subtítulo
+        yield return new WaitForSeconds(0.5f);
+
         dur = 6.5f;
-        subtitleSystem.LuminaDice("Moh... puedes oírme. Eres fuerte, y estoy aquí para guiarte.", dur);
+        subtitleSystem.LuminaDice(
+            "Moh... puedes oirme. Eres fuerte, y estoy aqui para guiarte.",
+            dur
+        );
         yield return new WaitForSeconds(dur + 0.5f);
 
-        // Segundo subtítulo
         dur = 3f;
-        subtitleSystem.LuminaDice("Estás en una Zona Segura, el único lugar donde la oscuridad no puede tocarte.", dur);
+        subtitleSystem.LuminaDice(
+            "Estas en una Zona Segura, el unico lugar donde la oscuridad no puede tocarte.",
+            dur
+        );
         yield return new WaitForSeconds(dur + 0.5f);
 
-        // Tercer subtítulo
         dur = 2.5f;
-        subtitleSystem.LuminaDice("Descansa aquí, pero no por mucho tiempo.", dur);
+        subtitleSystem.LuminaDice(
+            "Descansa aqui, pero no por mucho tiempo.",
+            dur
+        );
         yield return new WaitForSeconds(dur + 0.5f);
 
-
-        // --- NUEVOS SUBTÍTULOS ---
-
+        // Subtítulos tutoriales
         dur = 2f;
         subtitleSystem.LuminaDice("Mira adelante.", dur);
         yield return new WaitForSeconds(dur + 0.5f);
 
         dur = 4f;
-        subtitleSystem.LuminaDice("Esos champiñones han absorbido un poco de energía lumínica.", dur);
+        subtitleSystem.LuminaDice("Esos champiñones han absorbido un poco de energia luminica.", dur);
         yield return new WaitForSeconds(dur + 0.5f);
 
         dur = 4f;
-        subtitleSystem.LuminaDice("Puedes usarlos para rebotar y alcanzar lugares más altos.", dur);
+        subtitleSystem.LuminaDice("Puedes usarlos para rebotar y alcanzar lugares mas altos.", dur);
         yield return new WaitForSeconds(dur + 0.5f);
 
         dur = 4.5f;
@@ -64,12 +84,16 @@ public class LevelIntro : MonoBehaviour
         yield return new WaitForSeconds(dur + 0.5f);
 
         dur = 3f;
-        subtitleSystem.LuminaDice("Ellos restaurarán tu energía.", dur);
+        subtitleSystem.LuminaDice("Ellos restauraran tu energia.", dur);
         yield return new WaitForSeconds(dur + 0.5f);
 
-
-        // 🌟 Restaurar movimiento al final
         if (player != null)
             player.canMove = true;
+    }
+
+    // 🔹 Método que se llama desde GameOverManager cuando se presiona Retry
+    public static void SetRetry()
+    {
+        isRetry = true;
     }
 }
