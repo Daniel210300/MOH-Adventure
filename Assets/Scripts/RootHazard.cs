@@ -4,7 +4,7 @@ using UnityEngine;
 public class RootHazard : MonoBehaviour
 {
     [Header("Daño")]
-    public float damageAmount = 15f; // cuánto daño causa al tocar
+    public float damageAmount = 10f; // cuánto daño causa al tocar
     public float knockbackForce = 5f;
 
     [Header("Efectos")]

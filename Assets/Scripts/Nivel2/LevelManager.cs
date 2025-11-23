@@ -114,29 +114,6 @@ public class LevelManager : MonoBehaviour
         Time.timeScale = 0f;
     }
     
-    // Método para cuando el jugador muere
-    public void GameOver()
-    {
-        // Asegurarse de que tenemos las referencias actualizadas
-        FindAllUI();
-        
-        // Mostrar la UI de Game Over y ocultar otras
-        if (gameOverUI != null)
-        {
-            gameOverUI.SetActive(true);
-        }
-        
-        if (levelCompleteUI != null)
-        {
-            levelCompleteUI.SetActive(false);
-        }
-        
-        // Pausar el juego (opcional)
-        Time.timeScale = 0f;
-    }
-    
-    // Métodos para los botones de la UI
-    
     public void LoadNextLevel()
     {
         SceneManager.LoadScene(nextLevelScene);
