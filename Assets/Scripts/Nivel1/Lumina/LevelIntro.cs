@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class LevelIntro : MonoBehaviour
 {
@@ -14,13 +15,14 @@ public class LevelIntro : MonoBehaviour
         subtitleSystem = FindFirstObjectByType<LuminaSubtitleSystem>();
         player = FindFirstObjectByType<PlayerController>();
 
+        string currentScene = SceneManager.GetActiveScene().name;
+
         if (isRetry)
         {
             // Si es Retry, no mostrar intro
             if (player != null)
                 player.canMove = true;
 
-            // Reset para la próxima vez
             isRetry = false;
             return;
         }
@@ -30,12 +32,23 @@ public class LevelIntro : MonoBehaviour
             player.canMove = false;
 
         if (subtitleSystem != null)
-            StartCoroutine(ShowSubtitlesSequence());
+        {
+            // Selección de diálogos según el nivel
+            if (currentScene == "Nivel1")
+                StartCoroutine(ShowNivel1Intro());
+            else if (currentScene == "Nivel2")
+                StartCoroutine(ShowNivel2Intro());
+            else if (currentScene == "Nivel3")
+                StartCoroutine(ShowNivel3Intro());
+        }
         else
+        {
             Debug.LogError("No se encontró LuminaSubtitleSystem en la escena!");
+        }
     }
 
-    IEnumerator ShowSubtitlesSequence()
+    // ----------------- INTRO NIVEL 1 -----------------
+    IEnumerator ShowNivel1Intro()
     {
         float dur;
 
@@ -43,48 +56,96 @@ public class LevelIntro : MonoBehaviour
 
         dur = 6.5f;
         subtitleSystem.LuminaDice(
-            "Moh... puedes oirme. Eres fuerte, y estoy aqui para guiarte.",
+            "Moh... ¿puedes oírme? Eres fuerte y estoy aquí para guiarte.",
             dur
         );
         yield return new WaitForSeconds(dur + 0.5f);
 
         dur = 3f;
         subtitleSystem.LuminaDice(
-            "Estas en una Zona Segura, el unico lugar donde la oscuridad no puede tocarte.",
+            "Estás en una Zona Segura, el único lugar donde la oscuridad no puede tocarte.",
             dur
         );
         yield return new WaitForSeconds(dur + 0.5f);
 
         dur = 2.5f;
         subtitleSystem.LuminaDice(
-            "Descansa aqui, pero no por mucho tiempo.",
+            "Descansa aquí, pero no por mucho tiempo.",
             dur
         );
         yield return new WaitForSeconds(dur + 0.5f);
 
-        // Subtítulos tutoriales
         dur = 2f;
         subtitleSystem.LuminaDice("Mira adelante.", dur);
         yield return new WaitForSeconds(dur + 0.5f);
 
         dur = 4f;
-        subtitleSystem.LuminaDice("Esos champiñones han absorbido un poco de energia luminica.", dur);
+        subtitleSystem.LuminaDice(
+            "Esos champiñones han absorbido un poco de energía lumínica.",
+            dur
+        );
         yield return new WaitForSeconds(dur + 0.5f);
 
         dur = 4f;
-        subtitleSystem.LuminaDice("Puedes usarlos para rebotar y alcanzar lugares mas altos.", dur);
+        subtitleSystem.LuminaDice(
+            "Puedes usarlos para rebotar y alcanzar lugares más altos.",
+            dur
+        );
         yield return new WaitForSeconds(dur + 0.5f);
 
-        dur = 4.5f;
-        subtitleSystem.LuminaDice("Barronus ha robado la luz. Necesitamos recuperar estos fragmentos de luz.", dur);
+        if (player != null)
+            player.canMove = true;
+    }
+
+    // ----------------- INTRO NIVEL 2 -----------------
+    IEnumerator ShowNivel2Intro()
+    {
+        float dur;
+        yield return new WaitForSeconds(0.5f);
+
+        dur = 5f;
+        subtitleSystem.LuminaDice(
+            "Estamos dentro, Moh. Esta cueva es el túnel que lleva al corazón del bosque.",
+            dur
+        );
         yield return new WaitForSeconds(dur + 0.5f);
 
         dur = 5f;
-        subtitleSystem.LuminaDice("Pero cuidado... Si la oscuridad te debilita, toma los fragmentos.", dur);
+        subtitleSystem.LuminaDice(
+            "Mira a tu derecha, Moh. Veo un patrón de cristales tallado en la roca. No sé qué significa, pero anótalo.",
+            dur
+        );
         yield return new WaitForSeconds(dur + 0.5f);
 
-        dur = 3f;
-        subtitleSystem.LuminaDice("Ellos restauraran tu energia.", dur);
+        if (player != null)
+            player.canMove = true;
+    }
+
+    // ----------------- INTRO NIVEL 3 -----------------
+    IEnumerator ShowNivel3Intro()
+    {
+        float dur;
+        yield return new WaitForSeconds(0.5f);
+
+        dur = 4f;
+        subtitleSystem.LuminaDice(
+            "Esta es la parte más oscura del terreno.",
+            dur
+        );
+        yield return new WaitForSeconds(dur + 0.5f);
+
+        dur = 4f;
+        subtitleSystem.LuminaDice(
+            "Siento una presencia maligna muy cerca. Moh, mantente alerta.",
+            dur
+        );
+        yield return new WaitForSeconds(dur + 0.5f);
+
+        dur = 3.5f;
+        subtitleSystem.LuminaDice(
+            "¡Es él! ¡Es Barronus! Esta es solo su primera manifestación.",
+            dur
+        );
         yield return new WaitForSeconds(dur + 0.5f);
 
         if (player != null)

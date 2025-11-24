@@ -8,6 +8,7 @@ public class PlayerControllerLumina : MonoBehaviour
     public float speed = 5f;
     private float gravity = -30f;
     private float verticalVelocity = 0f;
+    public bool canMove = true;
 
     private void Awake()
     {
@@ -16,6 +17,8 @@ public class PlayerControllerLumina : MonoBehaviour
 
     private void Update()
     {
+        if (!canMove) return; // ⚡ Si no puede moverse, salir
+
         var kb = Keyboard.current;
         if (kb == null) return;
 
@@ -46,7 +49,6 @@ public class PlayerControllerLumina : MonoBehaviour
         // Rotación hacia la dirección de movimiento
         Vector3 flatMove = new Vector3(move.x, 0f, move.z);
 
-        // Protección: solo rotar si hay movimiento y no hay NaN
         if (flatMove.sqrMagnitude > 0.001f &&
             !float.IsNaN(flatMove.x) &&
             !float.IsNaN(flatMove.z))
@@ -55,4 +57,5 @@ public class PlayerControllerLumina : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, 0.15f);
         }
     }
+
 }

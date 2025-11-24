@@ -3,21 +3,27 @@ using UnityEngine.InputSystem;
 
 public class PlayerAttack : MonoBehaviour
 {
-    public LightCollector collector;
-    public Transform target; // Barronus
+    public LightCollector collector;        // Script de Moh
+    // public Transform barronusTargetEmpty; // Ya no se necesita si solo usamos triggers
 
     void Update()
     {
-        var keyboard = Keyboard.current;
-        if(keyboard == null) return;
-
-        // Tecla F para lanzar bola de luz
-        if(keyboard.fKey.wasPressedThisFrame)
+        // Aquí puedes poner otros ataques de Moh que no dependan de triggers
+        // Por ejemplo:
+        /*
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            if(collector.HasOrbs())
-            {
-                collector.LaunchOrb(target);
-            }
+            // Ejecutar otro ataque
         }
+        */
+
+        // Si quisieras dejar que desde cualquier lugar Moh lance orbs:
+        /*
+        if (Keyboard.current.fKey.wasPressedThisFrame && collector.HasOrbs())
+        {
+            collector.LaunchOrb(barronusTargetEmpty);
+        }
+        */
+        // Pero esta parte la dejamos comentada si quieres que solo se lance desde triggers
     }
 }

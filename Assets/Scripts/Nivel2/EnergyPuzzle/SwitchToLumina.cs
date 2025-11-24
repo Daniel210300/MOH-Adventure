@@ -68,6 +68,17 @@ private IEnumerator SwitchDelayed()
         luminaCanvas.gameObject.SetActive(true);
     }
 
+    LuminaSubtitleSystem subtitleSystem = Object.FindFirstObjectByType<LuminaSubtitleSystem>();
+    if (subtitleSystem != null)
+    {
+        float dur = 3.5f;
+        subtitleSystem.LuminaDice(
+            "Primero, baja con 'S' para poder moverte y recoger los fragmentos de luz.",
+            dur
+        );
+        yield return new WaitForSeconds(dur + 0.5f);
+    }
+
     // Iniciar el reto
     LightChallenge challenge = LightChallenge.FindFirstObjectByType<LightChallenge>();
     if (challenge != null)

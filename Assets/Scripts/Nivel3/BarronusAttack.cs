@@ -2,21 +2,21 @@ using UnityEngine;
 
 public class BarronusAttack : MonoBehaviour
 {
+    [Header("Spore Settings")]
     public GameObject sporePrefab;
     public Transform sporeSpawnPoint;
-    public Transform playerTarget;
-
+    public Transform sporeTargetPoint; // <-- Punto exacto en Moh
     public float attackInterval = 6f;
-    private float timer = 0f;
-
     public int sporesPerWave = 3;
     public float spreadAngle = 30f;
 
     [HideInInspector] public bool isDead = false;
 
+    private float timer = 0f;
+
     void Update()
     {
-        if (playerTarget == null || isDead) return;
+        if (sporeTargetPoint == null || isDead) return;
 
         timer += Time.deltaTime;
         if (timer >= attackInterval)
@@ -28,14 +28,25 @@ public class BarronusAttack : MonoBehaviour
 
     void LaunchSporeWave()
     {
+        if (sporeTargetPoint == null) return;
+
+        Vector3 baseDir = (sporeTargetPoint.position - sporeSpawnPoint.position).normalized;
+
+        if (baseDir == Vector3.zero)
+            baseDir = transform.forward; // fallback seguro
+
         for (int i = 0; i < sporesPerWave; i++)
         {
-            float angleOffset = Mathf.Lerp(-spreadAngle / 2, spreadAngle / 2, i / (float)(sporesPerWave - 1));
-            Vector3 spawnDir = (playerTarget.position - sporeSpawnPoint.position).normalized;
-            spawnDir = Quaternion.Euler(0, angleOffset, 0) * spawnDir;
+            // Offset lateral para dispersión
+            float offset = Mathf.Lerp(-spreadAngle / 2, spreadAngle / 2, (sporesPerWave == 1 ? 0.5f : i / (float)(sporesPerWave - 1)));
+            Vector3 right = Vector3.Cross(Vector3.up, baseDir);
+            Vector3 spreadDir = (baseDir + right * Mathf.Tan(offset * Mathf.Deg2Rad)).normalized;
 
-            GameObject spore = Instantiate(sporePrefab, sporeSpawnPoint.position, Quaternion.identity);
-            spore.GetComponent<SporeProjectile>().Init(playerTarget); // <-- Aquí pasa el Transform
+            // Rotación de la espora hacia spreadDir
+            Quaternion rotation = Quaternion.LookRotation(spreadDir);
+
+            GameObject spore = Instantiate(sporePrefab, sporeSpawnPoint.position, rotation);
+            spore.GetComponent<SporeProjectile>().Init(sporeTargetPoint);
         }
     }
 }

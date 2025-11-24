@@ -32,9 +32,10 @@ public class FloatingPuzzlePiece : MonoBehaviour
             
             // Notificar al manager de coleccionables
             if (PuzzlePieceManager.instance != null)
-            {
-                PuzzlePieceManager.instance.CollectPiece();
-            }
+{
+    PuzzlePieceManager.instance.CollectPiece();
+}
+
             
             // Efectos visuales/sonoros opcionales aquí
             // Ejemplo: partículas, sonido, etc.

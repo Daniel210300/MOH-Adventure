@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class SporeProjectile : MonoBehaviour
 {
-    public float speed = 8f;
-    public float damage = 15f;
+    public float speed = 7f;
+    public float damage = 25f;
 
     private Transform target;
 
-    // Inicializa la espora apuntando hacia un Transform
     public void Init(Transform targetTransform)
     {
         target = targetTransform;
@@ -17,26 +16,49 @@ public class SporeProjectile : MonoBehaviour
     {
         if (target == null) return;
 
-        // Movimiento hacia el target
         Vector3 dir = (target.position - transform.position).normalized;
         transform.position += dir * speed * Time.deltaTime;
+        transform.forward = dir;
+
+        // Destruir si llega cerca
+        if (Vector3.Distance(transform.position, target.position) < 0.3f)
+        {
+            // Hacer daño
+            var playerEnergy = target.GetComponent<PlayerEnergy>();
+            if (playerEnergy != null)
+                playerEnergy.TakeDamage(damage);
+
+            // Activar animación Hit
+            var animator = target.GetComponent<Animator>();
+            if (animator != null)
+                animator.SetTrigger("Hit");
+
+            Destroy(gameObject);
+        }
     }
+
 
     private void OnTriggerEnter(Collider other)
     {
-        // Colisiona con el Player
         if (other.CompareTag("Player"))
         {
-            if (PlayerEnergy.Instance != null)
-                PlayerEnergy.Instance.TakeDamage(damage);
+            // Hacer daño
+            var playerEnergy = other.GetComponent<PlayerEnergy>();
+            if (playerEnergy != null)
+                playerEnergy.TakeDamage(damage);
+
+            // Activar animación Hit
+            var animator = other.GetComponent<Animator>();
+            if (animator != null)
+                animator.SetTrigger("Hit");
 
             Destroy(gameObject);
         }
 
-        // Colisiona con el entorno
         if (other.CompareTag("Environment"))
         {
             Destroy(gameObject);
         }
     }
+
 }

@@ -20,6 +20,9 @@ public class LightChallenge : MonoBehaviour
     [Header("UI")]
     public GameObject restartButton;
 
+    [Header("Control de Lumina")]
+    public PlayerControllerLumina luminaController;
+
     private void Start()
     {
         if (restartButton != null)
@@ -72,12 +75,18 @@ public class LightChallenge : MonoBehaviour
         // Activar fragmentos de manera segura
         StartCoroutine(EnableFragmentsSmooth());
 
+        // Asegurarse de que Lumina pueda moverse
+        if (luminaController != null)
+            luminaController.canMove = true;
+
         if (restartButton != null)
             restartButton.SetActive(false);
     }
 
     public void CollectFragment(GameObject fragment)
     {
+        if (!challengeActive) return; // 🔹 Si el reto terminó, no recoger nada
+
         fragmentsCollected++;
 
         if (fragment != null)
@@ -105,6 +114,10 @@ public class LightChallenge : MonoBehaviour
     {
         challengeActive = false;
 
+        // Bloquear movimiento de Lumina
+        if (luminaController != null)
+            luminaController.canMove = false;
+
         if (uiManager != null)
             uiManager.UpdateMessage("Se acabó el tiempo. Presiona 'Reiniciar'.");
 
@@ -117,6 +130,10 @@ public class LightChallenge : MonoBehaviour
         fragmentsCollected = 0;
         timer = timeLimit;
         challengeActive = true;
+
+        // Reactivar movimiento de Lumina
+        if (luminaController != null)
+            luminaController.canMove = true;
 
         if (uiManager != null)
         {
@@ -134,8 +151,8 @@ public class LightChallenge : MonoBehaviour
     {
         Debug.Log("Saliendo del reto de fragmentos...");
 
-    if (uiManager != null)
-        uiManager.ClearMessage();
+        if (uiManager != null)
+            uiManager.ClearMessage();
     }
 
     private void OpenDoor()
@@ -151,7 +168,7 @@ public class LightChallenge : MonoBehaviour
         }
     }
 
-    // ========== FIX CRÍTICO ==========
+    // ========== FIX CRÍTICO ==========   
     private IEnumerator DisableNextFrame(GameObject obj)
     {
         yield return null; // Evita leak al desactivar renderers/colliders
